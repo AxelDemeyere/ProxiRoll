@@ -12,11 +12,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+html, body {
   margin: 0;
-  display: flex;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 h1 {
@@ -59,9 +66,4 @@ button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
 }
-
-#app {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 2rem;
-}
+</style>

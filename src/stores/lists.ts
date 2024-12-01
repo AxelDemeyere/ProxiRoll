@@ -5,23 +5,20 @@ import { generateId } from '../utils/random';
 const lists = ref<ParticipantList[]>([
   {
     id: generateId(),
-    name: 'CDS',
+    name: 'Équipe Frontend',
     participants: [
-      { id: generateId(), name: 'Audrey' },
-      { id: generateId(), name: 'Saïd' },
-      { id: generateId(), name: 'Jean-Christophe' },
-      { id: generateId(), name: 'Axel' },
-      { id: generateId(), name: 'Ferhat' },
-      { id: generateId(), name: 'Victoire' },
-      { id: generateId(), name: 'Laurent' },
-      { id: generateId(), name: 'Eliott' },
-      { id: generateId(), name: 'Yann' },
-      { id: generateId(), name: 'Jorix' },
-      { id: generateId(), name: 'Ludovic' },
-      { id: generateId(), name: 'Alexandre' },
-      { id: generateId(), name: 'Noémie' },
-
-
+      { id: generateId(), name: 'Alice' },
+      { id: generateId(), name: 'Bob' },
+      { id: generateId(), name: 'Charlie' }
+    ]
+  },
+  {
+    id: generateId(),
+    name: 'Équipe Backend',
+    participants: [
+      { id: generateId(), name: 'David' },
+      { id: generateId(), name: 'Eve' },
+      { id: generateId(), name: 'Frank' }
     ]
   }
 ]);
