@@ -5,6 +5,10 @@ defineProps<{
   participants: Participant[];
   selectedId: string | null;
 }>();
+
+const emit = defineEmits<{
+  (e: 'setSpeaker', participantId: string): void;
+}>();
 </script>
 
 <template>
@@ -16,7 +20,18 @@ defineProps<{
         :key="participant.id"
         :class="{ 'selected': participant.id === selectedId }"
       >
-        {{ participant.name }}
+        <div class="participant-info">
+          <label class="speaker-checkbox">
+            <input
+              type="radio"
+              name="speaker"
+              :checked="participant.isSpeaker"
+              @change="emit('setSpeaker', participant.id)"
+            >
+            <span class="checkbox-label">Speaker</span>
+          </label>
+          <span class="participant-name">{{ participant.name }}</span>
+        </div>
       </li>
     </ul>
   </div>
@@ -46,5 +61,33 @@ li {
   background-color: #e8f2ff;
   color: #0071e3;
   font-weight: 500;
+}
+
+.participant-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.speaker-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9em;
+  color: #1d1d1f;
+  cursor: pointer;
+}
+
+.speaker-checkbox input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  user-select: none;
+}
+
+.participant-name {
+  flex: 1;
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import ThemeToggle from "./ThemeToggle.vue";
 
 const route = useRoute();
 const currentRoute = computed(() => route.name);
@@ -9,22 +10,25 @@ const currentRoute = computed(() => route.name);
 <template>
   <nav class="navbar">
     <div class="nav-content">
-      <h1 class="nav-title">Daily Random</h1>
-      <div class="nav-links">
-        <router-link 
-          to="/" 
-          class="nav-link"
-          :class="{ active: currentRoute === 'daily' }"
-        >
-          Tirage au sort
-        </router-link>
-        <router-link 
-          to="/lists" 
-          class="nav-link"
-          :class="{ active: currentRoute === 'lists' }"
-        >
-          Listes
-        </router-link>
+      <h1 class="nav-title">Daily Roll</h1>
+      <div class="nav-actions">
+        <div class="nav-links">
+          <router-link
+            to="/"
+            class="nav-link"
+            :class="{ active: currentRoute === 'daily' }"
+          >
+            Tirage au sort
+          </router-link>
+          <router-link
+            to="/lists"
+            class="nav-link"
+            :class="{ active: currentRoute === 'lists' }"
+          >
+            Listes
+          </router-link>
+        </div>
+        <ThemeToggle />
       </div>
     </div>
   </nav>
@@ -32,9 +36,9 @@ const currentRoute = computed(() => route.name);
 
 <style scoped>
 .navbar {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--bg-color);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -54,6 +58,12 @@ const currentRoute = computed(() => route.name);
   margin: 0;
 }
 
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .nav-links {
   display: flex;
   gap: 1.5rem;
@@ -61,7 +71,7 @@ const currentRoute = computed(() => route.name);
 
 .nav-link {
   text-decoration: none;
-  color: #1d1d1f;
+  color: var(--text-color);
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 980px;
@@ -69,11 +79,11 @@ const currentRoute = computed(() => route.name);
 }
 
 .nav-link:hover {
-  background-color: #f5f5f7;
+  background-color: var(--hover-color);
 }
 
 .nav-link.active {
-  color: #0071e3;
-  background-color: #e8f2ff;
+  color: var(--accent-color);
+  background-color: var(--secondary-bg);
 }
 </style>

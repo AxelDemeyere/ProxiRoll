@@ -30,14 +30,15 @@ const addParticipant = (name: string) => {
   });
 };
 
-const selectSpeaker = () => {
-  if (!speaker.value && participants.value.length > 0) {
-    const randomIndex = getRandomIndex(participants.value.length);
-    const selectedSpeaker = participants.value[randomIndex];
+const setSpeaker = (participantId: string) => {
+  // Reset previous speaker if exists
+  participants.value.forEach(p => p.isSpeaker = false);
+  speaker.value = null;
+
+  const selectedSpeaker = participants.value.find(p => p.id === participantId);
+  if (selectedSpeaker && !hasStarted.value) {
     selectedSpeaker.isSpeaker = true;
     speaker.value = selectedSpeaker;
-    
-    // Move speaker to the end of the array
     participants.value = participants.value.filter(p => p.id !== selectedSpeaker.id);
     participants.value.push(selectedSpeaker);
   }
@@ -63,8 +64,10 @@ const updateParticipantMood = (mood: 'good' | 'neutral' | 'bad') => {
 
 const selectRandomParticipant = () => {
   if (!hasStarted.value) {
+    if (!speaker.value) {
+      return;
+    }
     hasStarted.value = true;
-    selectSpeaker();
   }
 
   if (participants.value.length === 0) {
@@ -72,7 +75,6 @@ const selectRandomParticipant = () => {
     return;
   }
 
-  // Don't select the speaker until they're the only one left
   if (participants.value.length > 1 && participants.value[participants.value.length - 1].isSpeaker) {
     const randomIndex = getRandomIndex(participants.value.length - 1);
     selectedId.value = participants.value[randomIndex].id;
@@ -99,7 +101,6 @@ const stopDaily = () => {
   selectedId.value = null;
   hasStarted.value = false;
   speaker.value = null;
-  // Reset speaker status
   participants.value.forEach(p => p.isSpeaker = false);
 };
 </script>
@@ -118,19 +119,20 @@ const stopDaily = () => {
         </button>
       </div>
       
-      <div class="scrollable-content">
+      <div class="main-content">
         <div v-if="speaker && !isCompleted" class="speaker-info">
           <h3>Speaker du daily</h3>
           <p>{{ speaker.name }}</p>
         </div>
 
-        <div v-if="participants.length > 0" class="main-content">
+        <div v-if="participants.length > 0" class="action-content">
           <button 
             v-if="!selectedId"
             @click="selectRandomParticipant"
             class="select-button"
+            :disabled="!hasStarted && !speaker"
           >
-            Tirer au sort
+            {{ !hasStarted ? 'Commencer le daily' : 'Tirer au sort' }}
           </button>
 
           <button
@@ -150,6 +152,7 @@ const stopDaily = () => {
           <ParticipantList 
             :participants="participants"
             :selectedId="selectedId"
+            @set-speaker="setSpeaker"
           />
         </div>
 
@@ -193,29 +196,22 @@ const stopDaily = () => {
 
 <style scoped>
 .daily-view {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  padding: 1rem 0;
 }
 
 .content-wrapper {
-  flex: 1;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border-radius: 24px;
-  padding: 1.5rem;
+  padding: 2rem;
   background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  flex-shrink: 0;
+  margin-bottom: 2rem;
 }
 
 .speaker-info {
@@ -237,31 +233,13 @@ const stopDaily = () => {
   margin: 0;
 }
 
-.scrollable-content {
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-.scrollable-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.scrollable-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.scrollable-content::-webkit-scrollbar-thumb {
-  background: #d1d1d1;
-  border-radius: 4px;
-}
-
-.scrollable-content::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
 .main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.action-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -271,6 +249,11 @@ const stopDaily = () => {
 .select-button, .next-button {
   font-size: 1.2em;
   min-width: 200px;
+}
+
+.select-button:disabled {
+  background-color: #d2d2d7;
+  cursor: not-allowed;
 }
 
 .next-button {
