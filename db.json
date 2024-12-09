@@ -1,0 +1,41 @@
+{
+  "listes": [
+    {
+      "id": "1",
+      "name": "Équipe Frontend",
+      "participants": [
+        {
+          "id": "f1",
+          "name": "Alice"
+        },
+        {
+          "id": "f2",
+          "name": "Bob"
+        },
+        {
+          "id": "f3",
+          "name": "Charlie"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Équipe Backend",
+      "participants": [
+        {
+          "id": "b1",
+          "name": "David"
+        },
+        {
+          "id": "b2",
+          "name": "Eve"
+        },
+        {
+          "id": "b3",
+          "name": "Frank"
+        }
+      ]
+    }
+  ],
+  "participants": []
+}

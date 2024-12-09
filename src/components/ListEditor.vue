@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { ParticipantList } from '../types/participantList';
+import { ref } from "vue";
+import type { ParticipantList } from "../types/participantList";
 
 const props = defineProps<{
   list: ParticipantList;
 }>();
 
 const emit = defineEmits<{
-  (e: 'update', updates: Partial<ParticipantList>): void;
-  (e: 'delete'): void;
-  (e: 'addParticipant', name: string): void;
-  (e: 'removeParticipant', participantId: string): void;
+  (e: "update", updates: Partial<ParticipantList>): void;
+  (e: "delete"): void;
+  (e: "addParticipant", name: string): void;
+  (e: "removeParticipant", participantId: string): void;
 }>();
 
 const isEditing = ref(false);
 const editedName = ref(props.list.name);
-const newParticipantName = ref('');
+const newParticipantName = ref("");
 
 const startEditing = () => {
   isEditing.value = true;
@@ -24,15 +24,15 @@ const startEditing = () => {
 
 const saveChanges = () => {
   if (editedName.value.trim()) {
-    emit('update', { name: editedName.value.trim() });
+    emit("update", { name: editedName.value.trim() });
     isEditing.value = false;
   }
 };
 
 const addParticipant = () => {
   if (newParticipantName.value.trim()) {
-    emit('addParticipant', newParticipantName.value.trim());
-    newParticipantName.value = '';
+    emit("addParticipant", newParticipantName.value.trim());
+    newParticipantName.value = "";
   }
 };
 </script>
@@ -43,9 +43,7 @@ const addParticipant = () => {
       <div v-if="!isEditing" class="list-title">
         <h3>{{ list.name }}</h3>
         <div class="list-actions">
-          <button class="icon-button" @click="startEditing">
-            ✏️
-          </button>
+          <button class="icon-button" @click="startEditing">✏️</button>
           <button class="icon-button delete" @click="$emit('delete')">
             🗑️
           </button>
@@ -58,9 +56,7 @@ const addParticipant = () => {
           class="edit-input"
           @keyup.enter="saveChanges"
         />
-        <button class="save-button" @click="saveChanges">
-          Enregistrer
-        </button>
+        <button class="save-button" @click="saveChanges">Enregistrer</button>
       </div>
     </div>
 
@@ -72,9 +68,7 @@ const addParticipant = () => {
         class="participant-input"
         @keyup.enter="addParticipant"
       />
-      <button class="add-button" @click="addParticipant">
-        Ajouter
-      </button>
+      <button class="add-button" @click="addParticipant">Ajouter</button>
     </div>
 
     <ul class="participants-list">
@@ -171,7 +165,8 @@ const addParticipant = () => {
   border-radius: 8px;
 }
 
-.save-button, .add-button {
+.save-button,
+.add-button {
   padding: 8px 16px;
   font-size: 0.9em;
 }

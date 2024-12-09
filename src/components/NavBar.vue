@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRoute } from "vue-router";
-import ThemeToggle from "./ThemeToggle.vue";
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import ThemeToggle from './ThemeToggle.vue';
 
 const route = useRoute();
 const currentRoute = computed(() => route.name);
@@ -10,18 +10,18 @@ const currentRoute = computed(() => route.name);
 <template>
   <nav class="navbar">
     <div class="nav-content">
-      <h1 class="nav-title">Daily Roll</h1>
+      <h1 class="nav-title">Daily Random</h1>
       <div class="nav-actions">
         <div class="nav-links">
-          <router-link
-            to="/"
+          <router-link 
+            to="/" 
             class="nav-link"
             :class="{ active: currentRoute === 'daily' }"
           >
             Tirage au sort
           </router-link>
-          <router-link
-            to="/lists"
+          <router-link 
+            to="/lists" 
             class="nav-link"
             :class="{ active: currentRoute === 'lists' }"
           >

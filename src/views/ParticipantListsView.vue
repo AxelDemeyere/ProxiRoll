@@ -1,28 +1,55 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useListsStore } from '../stores/lists';
 import { useParticipantsStore } from '../stores/participants';
 import ListEditor from '../components/ListEditor.vue';
 
 const router = useRouter();
-const { lists, addList, updateList, deleteList, addParticipantToList, removeParticipantFromList } = useListsStore();
+const { 
+  lists, 
+  loading, 
+  error,
+  fetchLists,
+  addList, 
+  updateList, 
+  deleteList, 
+  addParticipantToList, 
+  removeParticipantFromList 
+} = useListsStore();
+
 const { setParticipants } = useParticipantsStore();
 
 const newListName = ref('');
 
-const createList = () => {
+onMounted(async () => {
+  try {
+    await fetchLists();
+  } catch (err) {
+    console.error('Failed to fetch lists:', err);
+  }
+});
+
+const createList = async () => {
   if (newListName.value.trim()) {
-    addList(newListName.value.trim());
-    newListName.value = '';
+    try {
+      await addList(newListName.value.trim());
+      newListName.value = '';
+    } catch (err) {
+      console.error('Failed to create list:', err);
+    }
   }
 };
 
 const selectList = async (listId: string) => {
   const list = lists.value.find(l => l.id === listId);
   if (list) {
-    setParticipants([...list.participants]);
-    await router.push('/');
+    try {
+      await setParticipants([...list.participants]);
+      await router.push('/');
+    } catch (err) {
+      console.error('Failed to select list:', err);
+    }
   }
 };
 </script>
@@ -46,7 +73,17 @@ const selectList = async (listId: string) => {
         </div>
       </div>
 
-      <div class="lists-grid">
+      <div v-if="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Chargement des listes...</p>
+      </div>
+
+      <div v-else-if="error" class="error">
+        <p>{{ error }}</p>
+        <button class="retry-button" @click="fetchLists">Réessayer</button>
+      </div>
+
+      <div v-else class="lists-grid">
         <div v-for="list in lists" :key="list.id" class="list-container">
           <ListEditor
             :list="list"
@@ -113,5 +150,43 @@ const selectList = async (listId: string) => {
 
 .use-list-button {
   width: 100%;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-color);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 1rem;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: #ff3b30;
+  background-color: #fff2f2;
+  border-radius: 12px;
+}
+
+.retry-button {
+  margin-top: 1rem;
+  background-color: #ff3b30;
+}
+
+.retry-button:hover {
+  background-color: #ff453a;
 }
 </style>

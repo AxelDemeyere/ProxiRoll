@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { Participant } from '../types/participant';
-import ParticipantStatus from './ParticipantStatus.vue';
+import type { Participant } from "../types/participant";
+import ParticipantStatus from "./ParticipantStatus.vue";
 
 const props = defineProps<{
   participant: Participant | null;
 }>();
 
 const emit = defineEmits<{
-  (e: 'updateStatus', status: 'present' | 'absent'): void;
-  (e: 'updateMood', mood: 'good' | 'neutral' | 'bad'): void;
+  (e: "updateStatus", status: "present" | "absent"): void;
+  (e: "updateMood", mood: "good" | "neutral" | "bad"): void;
 }>();
 </script>
 
