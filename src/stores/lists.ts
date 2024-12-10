@@ -49,12 +49,12 @@ export const useListsStore = () => {
     }
   };
 
-  const addParticipantToList = async (listId: string, participantId: string) => {
+  const addParticipantToList = async (listId: string, participantName: string) => {
     loading.value = true;
     error.value = null;
     try {
       // Ajouter le participant à la liste via le service
-      const updatedList = await listService.addParticipant(listId, participantId);
+      const updatedList = await listService.addParticipant(listId, participantName);
       
       // Mettre à jour la liste dans le store
       const listIndex = lists.value.findIndex(list => list._id === listId);

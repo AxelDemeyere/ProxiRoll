@@ -10,26 +10,48 @@ export const listService = {
     return response.data;
   },
 
-  async addParticipant(listId: string, participantId: string): Promise<ParticipantList> {
-    console.log(`[LIST SERVICE] Adding participant ${participantId} to list ${listId}`);
+  async addParticipant(listId: string, participantName: string): Promise<ParticipantList> {
+    console.log(`[LIST SERVICE] Adding participant ${participantName} to list ${listId}`);
     try {
+      // Validate IDs and names
+      if (!listId || !participantName) {
+        throw new Error('Invalid list ID or participant name');
+      }
+
+      // Create participant first
+      const participantResponse = await api.post('/participants', { name: participantName });
+      const newParticipant = participantResponse.data;
+
+      // Then add participant to list
       const response = await api.patch(`/listes/${listId}/participants`, { 
-        participantId 
+        participantId: newParticipant.id 
       });
-      console.log('[LIST SERVICE] Add participant response:', response.data);
+      
+      console.log('[LIST SERVICE] Full response:', JSON.stringify(response, null, 2));
+      console.log('[LIST SERVICE] Response data:', JSON.stringify(response.data, null, 2));
       
       // Vérification de la structure de la réponse
-      if (!response.data || !response.data.list) {
+      if (!response.data) {
+        console.error('[LIST SERVICE] Invalid response structure', response.data);
         throw new Error('Invalid response structure');
       }
       
-      return response.data.list;
-    } catch (error) {
-      console.error('[LIST SERVICE] Error adding participant:', error);
+      return response.data;
+    } catch (error: any) {
+      console.error('[LIST SERVICE] Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
       
       // Gestion des erreurs spécifiques
       if (api.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.error || 'Erreur lors de l\'ajout du participant';
+        const defaultMessage = 'Erreur lors de l\'ajout du participant';
+        const errorDetails = error.response?.data || error.response || error;
+        
+        console.error('[LIST SERVICE] Axios Error details:', JSON.stringify(errorDetails, null, 2));
+        
+        const errorMessage = 
+          (errorDetails as any)?.message || 
+          (errorDetails as any)?.error || 
+          defaultMessage;
+        
         throw new Error(errorMessage);
       }
       
