@@ -7,17 +7,17 @@ export const participantService = {
     return response.data;
   },
 
-  async create(participant: Omit<Participant, 'id'>): Promise<Participant> {
+  async create(participant: Omit<Participant, '_id'>): Promise<Participant> {
     const response = await api.post('/participants', participant);
     return response.data;
   },
 
-  async update(id: string, updates: Partial<Participant>): Promise<Participant> {
-    const response = await api.patch(`/participants/${id}`, updates);
+  async update(_id: string, updates: Partial<Participant>): Promise<Participant> {
+    const response = await api.patch(`/participants/${_id}`, updates);
     return response.data;
   },
 
-  async delete(id: string): Promise<void> {
-    await api.delete(`/participants/${id}`);
+  async delete(_id: string): Promise<void> {
+    await api.delete(`/participants/${_id}`);
   }
 };

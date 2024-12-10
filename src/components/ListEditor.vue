@@ -72,11 +72,11 @@ const addParticipant = () => {
     </div>
 
     <ul class="participants-list">
-      <li v-for="participant in list.participants" :key="participant.id">
+      <li v-for="participant in list.participants" :key="participant._id">
         <span>{{ participant.name }}</span>
         <button
           class="icon-button small"
-          @click="$emit('removeParticipant', participant.id)"
+          @click="$emit('removeParticipant', participant._id)"
         >
           ❌
         </button>

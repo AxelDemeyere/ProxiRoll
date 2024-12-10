@@ -42,7 +42,7 @@ const createList = async () => {
 };
 
 const selectList = async (listId: string) => {
-  const list = lists.value.find(l => l.id === listId);
+  const list = lists.value.find(l => l._id === listId);
   if (list) {
     try {
       await setParticipants([...list.participants]);
@@ -84,17 +84,17 @@ const selectList = async (listId: string) => {
       </div>
 
       <div v-else class="lists-grid">
-        <div v-for="list in lists" :key="list.id" class="list-container">
+        <div v-for="list in lists" :key="list._id" class="list-container">
           <ListEditor
             :list="list"
-            @update="updates => updateList(list.id, updates)"
-            @delete="deleteList(list.id)"
-            @add-participant="name => addParticipantToList(list.id, name)"
-            @remove-participant="participantId => removeParticipantFromList(list.id, participantId)"
+            @update="updates => updateList(list._id, updates)"
+            @delete="deleteList(list._id)"
+            @add-participant="name => addParticipantToList(list._id, name)"
+            @remove-participant="participantId => removeParticipantFromList(list._id, participantId)"
           />
           <button 
             class="use-list-button"
-            @click="selectList(list.id)"
+            @click="selectList(list._id)"
           >
             Utiliser cette liste
           </button>

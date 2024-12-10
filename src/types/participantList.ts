@@ -1,5 +1,5 @@
 export interface ParticipantList {
-  id: string;
+  _id: string;
   name: string;
-  participants: Array<{ id: string; name: string }>;
+  participants: Array<{ _id: string; name: string }>;
 }
