@@ -1,14 +1,35 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+
+const isMenuOpen = ref(false)
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+const closeMenu = () => {
+  isMenuOpen.value = false
+}
 </script>
 
 <template>
   <header>
-    <nav>
-      <RouterLink to="/">Tirage</RouterLink>
-      <RouterLink to="/participants">Participants</RouterLink>
-      <RouterLink to="/lists">Listes</RouterLink>
-    </nav>
+    <div class="header-container">
+      <div class="logo">ProxiRoll</div>
+      <div class="burger-menu" @click="toggleMenu">
+        <div class="burger-icon" :class="{ 'open': isMenuOpen }">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      <nav :class="{ 'menu-open': isMenuOpen }">
+        <RouterLink to="/" @click="closeMenu">Tirage</RouterLink>
+        <RouterLink to="/participants" @click="closeMenu">Participants</RouterLink>
+        <RouterLink to="/lists" @click="closeMenu">Listes</RouterLink>
+      </nav>
+    </div>
   </header>
 
   <RouterView />
@@ -50,37 +71,104 @@ import { RouterLink, RouterView } from 'vue-router'
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
   background-color: var(--background-color);
   color: var(--text-primary);
-  line-height: 1.5;
 }
 
 #app {
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 header {
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+  box-shadow: var(--shadow-xs);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-nav {
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.burger-menu {
+  display: none;
+  cursor: pointer;
+}
+
+.burger-icon {
+  width: 30px;
+  height: 20px;
+  position: relative;
+  transform: rotate(0deg);
+  transition: .5s ease-in-out;
+  cursor: pointer;
+}
+
+.burger-icon span {
+  display: block;
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background: var(--text-primary);
+  border-radius: 9px;
+  opacity: 1;
+  left: 0;
+  transform: rotate(0deg);
+  transition: .25s ease-in-out;
+}
+
+.burger-icon span:nth-child(1) {
+  top: 0px;
+}
+
+.burger-icon span:nth-child(2) {
+  top: 10px;
+}
+
+.burger-icon span:nth-child(3) {
+  top: 20px;
+}
+
+.burger-icon.open span:nth-child(1) {
+  top: 10px;
+  transform: rotate(135deg);
+}
+
+.burger-icon.open span:nth-child(2) {
+  opacity: 0;
+  left: -60px;
+}
+
+.burger-icon.open span:nth-child(3) {
+  top: 10px;
+  transform: rotate(-135deg);
+}
+
+nav {
   display: flex;
   gap: 2rem;
   align-items: center;
@@ -218,19 +306,37 @@ nav a.router-link-active {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .burger-menu {
+    display: block;
+  }
+
   nav {
-    padding: 0.75rem;
-    gap: 1rem;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--surface-color);
+    box-shadow: var(--shadow-md);
+    flex-direction: column;
+    align-items: center;
+  }
+
+  nav.menu-open {
+    height: fit-content;
+    display: flex;
   }
 
   nav a {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin: 0;
   }
 
-  .button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+  nav a:last-child {
+    border-bottom: none;
   }
 }
 
