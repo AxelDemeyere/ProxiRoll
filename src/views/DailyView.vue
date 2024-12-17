@@ -16,7 +16,7 @@ const hasStarted = ref(false);
 const speaker = ref<Participant | null>(null);
 
 const selectedParticipant = computed(() => 
-  participants.value.find(p => p.id === selectedId.value) || null
+  participants.value.find(p => p._id === selectedId.value) || null
 );
 
 const isCompleted = computed(() => {
@@ -25,7 +25,7 @@ const isCompleted = computed(() => {
 
 const addParticipant = (name: string) => {
   participants.value.push({
-    id: generateId(),
+    _id: generateId(),
     name
   });
 };
@@ -35,18 +35,18 @@ const setSpeaker = (participantId: string) => {
   participants.value.forEach(p => p.isSpeaker = false);
   speaker.value = null;
 
-  const selectedSpeaker = participants.value.find(p => p.id === participantId);
+  const selectedSpeaker = participants.value.find(p => p._id === participantId);
   if (selectedSpeaker && !hasStarted.value) {
     selectedSpeaker.isSpeaker = true;
     speaker.value = selectedSpeaker;
-    participants.value = participants.value.filter(p => p.id !== selectedSpeaker.id);
+    participants.value = participants.value.filter(p => p._id !== selectedSpeaker._id);
     participants.value.push(selectedSpeaker);
   }
 };
 
 const updateParticipantStatus = (status: 'present' | 'absent') => {
   if (selectedId.value) {
-    const participant = participants.value.find(p => p.id === selectedId.value);
+    const participant = participants.value.find(p => p._id === selectedId.value);
     if (participant) {
       participant.status = status;
     }
@@ -55,7 +55,7 @@ const updateParticipantStatus = (status: 'present' | 'absent') => {
 
 const updateParticipantMood = (mood: 'good' | 'neutral' | 'bad') => {
   if (selectedId.value) {
-    const participant = participants.value.find(p => p.id === selectedId.value);
+    const participant = participants.value.find(p => p._id === selectedId.value);
     if (participant) {
       participant.mood = mood;
     }
@@ -77,19 +77,19 @@ const selectRandomParticipant = () => {
 
   if (participants.value.length > 1 && participants.value[participants.value.length - 1].isSpeaker) {
     const randomIndex = getRandomIndex(participants.value.length - 1);
-    selectedId.value = participants.value[randomIndex].id;
+    selectedId.value = participants.value[randomIndex]._id;
   } else {
     const randomIndex = getRandomIndex(participants.value.length);
-    selectedId.value = participants.value[randomIndex].id;
+    selectedId.value = participants.value[randomIndex]._id;
   }
 };
 
 const nextParticipant = () => {
   if (selectedId.value) {
-    const selected = participants.value.find(p => p.id === selectedId.value);
+    const selected = participants.value.find(p => p._id === selectedId.value);
     if (selected) {
       completedParticipants.value.push(selected);
-      participants.value = participants.value.filter(p => p.id !== selected.id);
+      participants.value = participants.value.filter(p => p._id !== selected._id);
       selectedId.value = null;
     }
   }
@@ -163,7 +163,7 @@ const stopDaily = () => {
           <ul>
             <li 
               v-for="participant in completedParticipants" 
-              :key="participant.id"
+              :key="participant._id"
               :class="{
                 'status-present': participant.status === 'present',
                 'status-absent': participant.status === 'absent',
