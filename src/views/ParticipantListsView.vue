@@ -59,18 +59,21 @@ const selectList = async (listId: string) => {
     <div class="content-wrapper">
       <div class="header">
         <h2>Listes de participants</h2>
-        <div class="new-list-form">
-          <input
-            v-model="newListName"
-            type="text"
-            placeholder="Nom de la nouvelle liste"
-            class="new-list-input"
-            @keyup.enter="createList"
-          />
-          <button @click="createList">
-            Créer une liste
+        <form @submit.prevent="createList" class="new-list-form">
+          <div class="input-group">
+            <input
+              v-model="newListName"
+              type="text"
+              placeholder="Nom de la nouvelle liste"
+              class="new-list-input"
+              required
+            />
+          </div>
+          <button type="submit" class="create-button">
+            <span class="button-text">Créer une liste</span>
+            <span class="button-icon">+</span>
           </button>
-        </div>
+        </form>
       </div>
 
       <div v-if="loading" class="loading">
@@ -83,13 +86,21 @@ const selectList = async (listId: string) => {
         <button class="retry-button" @click="fetchLists">Réessayer</button>
       </div>
 
+      <div v-else-if="lists.length === 0" class="empty-message">
+        Aucune liste créée
+      </div>
+
       <div v-else class="lists-grid">
-        <div v-for="list in lists" :key="list._id" class="list-container">
+        <div
+          v-for="list in lists"
+          :key="list._id"
+          class="list-container"
+        >
           <ListEditor
             :list="list"
             @update="updates => updateList(list._id, updates)"
             @delete="deleteList(list._id)"
-            @add-participant="name => addParticipantToList(list._id, name)"
+            @add-participant="participantId => addParticipantToList(list._id, participantId)"
             @remove-participant="participantId => removeParticipantFromList(list._id, participantId)"
           />
           <button 
@@ -106,87 +117,156 @@ const selectList = async (listId: string) => {
 
 <style scoped>
 .lists-view {
-  padding: 1rem 0;
+  min-height: 100%;
+  padding: 1rem;
 }
 
-.content-wrapper {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-radius: 24px;
-  padding: 2rem;
-  background-color: #ffffff;
+@media (max-width: 768px) {
+  .lists-view {
+    padding: 0.5rem;
+  }
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 2rem;
+}
+
+.header h2 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .header h2 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
 }
 
 .new-list-form {
   display: flex;
   gap: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .new-list-form {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .new-list-form .create-button {
+    width: 100%;
+  }
+}
+
+.input-group {
+  flex: 1;
 }
 
 .new-list-input {
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid #d2d2d7;
-  min-width: 250px;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.new-list-input:focus {
+  border-color: #42b983;
+  outline: none;
+}
+
+.create-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  background-color: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  height: 40px;
+  transition: background-color 0.2s;
+}
+
+.create-button:hover {
+  background-color: #3aa876;
+}
+
+.button-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+@media (max-width: 480px) {
+  .button-text {
+    display: none;
+  }
+
+  .create-button {
+    padding: 0.5rem;
+  }
+
+  .button-icon {
+    margin: 0;
+  }
+}
+
+.empty-message {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 4px;
 }
 
 .lists-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
+  margin-top: 2rem;
 }
 
-.list-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+@media (max-width: 640px) {
+  .lists-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+
+
+.list-container:hover {
+  border-radius: 16px;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .use-list-button {
+  border-radius: 0 0 16px 16px;
   width: 100%;
+  padding: 0.75rem;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
 }
 
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-color);
+.use-list-button:hover {
+  background-color: #34495e;
 }
 
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  margin: 0 auto 1rem;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid var(--accent-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.error {
-  text-align: center;
-  padding: 2rem;
-  color: #ff3b30;
-  background-color: #fff2f2;
-  border-radius: 12px;
-}
-
-.retry-button {
-  margin-top: 1rem;
-  background-color: #ff3b30;
-}
-
-.retry-button:hover {
-  background-color: #ff453a;
+@media (max-width: 480px) {
+  .use-list-button {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
 }
 </style>

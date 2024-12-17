@@ -17,8 +17,8 @@ const emit = defineEmits<{
     <ul>
       <li
         v-for="participant in participants"
-        :key="participant.id"
-        :class="{ 'selected': participant.id === selectedId }"
+        :key="participant._id"
+        :class="{ 'selected': participant._id === selectedId }"
       >
         <div class="participant-info">
           <label class="speaker-checkbox">
@@ -26,7 +26,7 @@ const emit = defineEmits<{
               type="radio"
               name="speaker"
               :checked="participant.isSpeaker"
-              @change="emit('setSpeaker', participant.id)"
+              @change="emit('setSpeaker', participant._id)"
             >
             <span class="checkbox-label">Speaker</span>
           </label>

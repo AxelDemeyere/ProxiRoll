@@ -7,6 +7,11 @@ export const participantService = {
     return response.data;
   },
 
+  async getAvailable(): Promise<Participant[]> {
+    const response = await api.get('/participants/available');
+    return response.data;
+  },
+
   async create(participant: Omit<Participant, '_id'>): Promise<Participant> {
     const response = await api.post('/participants', participant);
     return response.data;

@@ -1,6 +1,7 @@
-import { ref, toRaw } from 'vue';
-import type { Participant } from '../types/participant';
+import { ref } from 'vue';
 import { participantService } from '../services/participantService';
+import type { Participant } from '../types/participant';
+import axios from 'axios';
 
 const participants = ref<Participant[]>([]);
 const loading = ref(false);
@@ -13,59 +14,59 @@ export const useParticipantsStore = () => {
     try {
       const response = await participantService.getAll();
       participants.value = response;
-    } catch (err) {
-      error.value = 'Failed to load participants';
-      if (err instanceof Error) {
-        console.error('Error fetching participants:', err.message);
+    } catch (err: unknown) {
+      error.value = "Impossible de charger les participants";
+      if (axios.isAxiosError(err)) {
+        console.error("Axios Error:", err.response?.data || err.message);
+      } else if (err instanceof Error) {
+        console.error("Error fetching participants:", err.message);
+      } else {
+        console.error("Unknown error fetching participants:", err);
       }
     } finally {
       loading.value = false;
     }
   };
 
-  const setParticipants = async (newParticipants: Participant[]) => {
-    loading.value = true;
-    error.value = null;
+  const addParticipant = async (participant: Omit<Participant, '_id'>) => {
     try {
-      // Clear existing participants
-      const currentParticipants = toRaw(participants.value);
-      for (const participant of currentParticipants) {
-        await participantService.delete(participant.id);
+      console.log('[PARTICIPANTS STORE] Adding participant:', participant);
+      const newParticipant = await participantService.create(participant);
+      participants.value.push(newParticipant);
+      return newParticipant;
+    } catch (err: unknown) {
+      error.value = "Impossible d'ajouter le participant";
+      if (axios.isAxiosError(err)) {
+        console.error("Axios Error:", err.response?.data || err.message);
+      } else if (err instanceof Error) {
+        console.error("Error adding participant:", err.message);
+      } else {
+        console.error("Unknown error adding participant:", err);
       }
-      
-      // Add new participants
-      participants.value = [];
-      for (const participant of newParticipants) {
-        const created = await participantService.create(toRaw(participant));
-        participants.value = [...participants.value, created];
-      }
-    } catch (err) {
-      error.value = 'Failed to update participants';
-      if (err instanceof Error) {
-        console.error('Error updating participants:', err.message);
-      }
-    } finally {
-      loading.value = false;
+      throw err;
     }
   };
 
-  const updateParticipant = async (id: string, updates: Partial<Participant>) => {
+  const deleteParticipant = async (participantId: string) => {
     try {
-      const updated = await participantService.update(id, toRaw(updates));
-      const index = participants.value.findIndex(p => p.id === id);
-      if (index !== -1) {
-        participants.value = [
-          ...participants.value.slice(0, index),
-          updated,
-          ...participants.value.slice(index + 1)
-        ];
+      console.log('[PARTICIPANTS STORE] Deleting participant:', participantId);
+      await participantService.delete(participantId);
+      participants.value = participants.value.filter(p => p._id !== participantId);
+    } catch (err: unknown) {
+      error.value = "Impossible de supprimer le participant";
+      if (axios.isAxiosError(err)) {
+        console.error("Axios Error:", err.response?.data || err.message);
+      } else if (err instanceof Error) {
+        console.error("Error deleting participant:", err.message);
+      } else {
+        console.error("Unknown error deleting participant:", err);
       }
-    } catch (err) {
-      error.value = 'Failed to update participant';
-      if (err instanceof Error) {
-        console.error('Error updating participant:', err.message);
-      }
+      throw err;
     }
+  };
+
+  const setParticipants = (newParticipants: Participant[]) => {
+    participants.value = newParticipants;
   };
 
   return {
@@ -73,7 +74,8 @@ export const useParticipantsStore = () => {
     loading,
     error,
     fetchParticipants,
+    addParticipant,
+    deleteParticipant,
     setParticipants,
-    updateParticipant
   };
 };

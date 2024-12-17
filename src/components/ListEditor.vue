@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { ParticipantList } from "../types/participantList";
+import ParticipantSelector from "./ParticipantSelector.vue";
 
 const props = defineProps<{
   list: ParticipantList;
@@ -9,13 +10,12 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "update", updates: Partial<ParticipantList>): void;
   (e: "delete"): void;
-  (e: "addParticipant", name: string): void;
+  (e: "addParticipant", participantId: string): void;
   (e: "removeParticipant", participantId: string): void;
 }>();
 
 const isEditing = ref(false);
 const editedName = ref(props.list.name);
-const newParticipantName = ref("");
 
 const startEditing = () => {
   isEditing.value = true;
@@ -29,11 +29,9 @@ const saveChanges = () => {
   }
 };
 
-const addParticipant = () => {
-  if (newParticipantName.value.trim()) {
-    emit("addParticipant", newParticipantName.value.trim());
-    newParticipantName.value = "";
-  }
+const handleParticipantSelect = (participantId: string) => {
+  console.log('Selected participant:', participantId);
+  emit("addParticipant", participantId);
 };
 </script>
 
@@ -49,48 +47,61 @@ const addParticipant = () => {
           </button>
         </div>
       </div>
-      <div v-else class="edit-form">
+
+      <form v-else @submit.prevent="saveChanges" class="edit-form">
         <input
           v-model="editedName"
           type="text"
-          class="edit-input"
-          @keyup.enter="saveChanges"
+          placeholder="Nom de la liste"
+          required
+          class="input-field"
         />
-        <button class="save-button" @click="saveChanges">Enregistrer</button>
+        <div class="form-actions">
+          <button type="submit" class="save-button">Sauvegarder</button>
+          <button
+            type="button"
+            class="cancel-button"
+            @click="isEditing = false"
+          >
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="participants-section">
+      <h4>Participants</h4>
+      <ParticipantSelector @select-participant="handleParticipantSelect" />
+      
+      <div v-if="list.participants.length === 0" class="empty-message">
+        Aucun participant dans cette liste
       </div>
-    </div>
-
-    <div class="add-participant">
-      <input
-        v-model="newParticipantName"
-        type="text"
-        placeholder="Nouveau participant"
-        class="participant-input"
-        @keyup.enter="addParticipant"
-      />
-      <button class="add-button" @click="addParticipant">Ajouter</button>
-    </div>
-
-    <ul class="participants-list">
-      <li v-for="participant in list.participants" :key="participant._id">
-        <span>{{ participant.name }}</span>
-        <button
-          class="icon-button small"
-          @click="$emit('removeParticipant', participant._id)"
+      
+      <ul v-else class="participants-list">
+        <li
+          v-for="participant in list.participants"
+          :key="participant._id"
+          class="participant-item"
         >
-          ❌
-        </button>
-      </li>
-    </ul>
+          {{ participant.name }}
+          <button
+            class="remove-button"
+            @click="$emit('removeParticipant', participant._id)"
+          >
+            ❌
+          </button>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .list-editor {
   border: 1px solid #d2d2d7;
-  border-radius: 16px;
+  border-radius: 16px 16px 0 0;
   padding: 1.5rem;
-  background-color: white;
+
 }
 
 .list-header {
@@ -113,7 +124,7 @@ const addParticipant = () => {
   gap: 0.5rem;
 }
 
-.edit-input {
+.input-field {
   flex: 1;
   padding: 8px 12px;
   border-radius: 8px;
@@ -128,26 +139,12 @@ const addParticipant = () => {
   font-size: 1.2em;
 }
 
-.icon-button.small {
-  font-size: 1em;
-  padding: 2px;
-}
-
 .icon-button.delete:hover {
   color: #ff3b30;
 }
 
-.add-participant {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.participant-input {
-  flex: 1;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #d2d2d7;
+.participants-section {
+  margin-top: 1rem;
 }
 
 .participants-list {
@@ -166,8 +163,22 @@ const addParticipant = () => {
 }
 
 .save-button,
-.add-button {
+.cancel-button {
   padding: 8px 16px;
   font-size: 0.9em;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.empty-message {
+  padding: 1rem;
+  text-align: center;
+  color: #666;
 }
 </style>
