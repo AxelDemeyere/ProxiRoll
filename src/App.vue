@@ -320,11 +320,18 @@ nav a.router-link-active {
     box-shadow: var(--shadow-md);
     flex-direction: column;
     align-items: center;
+    opacity: 0;
+    transform: translateY(-100%);
+    transition: 
+      transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+      opacity 0.4s ease;
+    will-change: transform, opacity;
   }
 
   nav.menu-open {
-    height: fit-content;
     display: flex;
+    opacity: 1;
+    transform: translateY(0);
   }
 
   nav a {
@@ -333,7 +340,21 @@ nav a.router-link-active {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     margin: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 
+      opacity 0.3s ease,
+      transform 0.3s ease;
   }
+
+  nav.menu-open a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  nav a:nth-child(1) { transition-delay: 0.1s; }
+  nav a:nth-child(2) { transition-delay: 0.2s; }
+  nav a:nth-child(3) { transition-delay: 0.3s; }
 
   nav a:last-child {
     border-bottom: none;
