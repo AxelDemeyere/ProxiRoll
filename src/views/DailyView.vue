@@ -90,7 +90,13 @@ const nextParticipant = () => {
     if (selected) {
       completedParticipants.value.push(selected);
       participants.value = participants.value.filter(p => p._id !== selected._id);
-      selectedId.value = null;
+      
+      // Sélectionner automatiquement le prochain participant
+      if (participants.value.length > 0) {
+        selectRandomParticipant();
+      } else {
+        selectedId.value = null;
+      }
     }
   }
 };
