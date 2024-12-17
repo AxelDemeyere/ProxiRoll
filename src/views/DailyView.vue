@@ -164,7 +164,7 @@ const stopDaily = () => {
 
         <CompletionMessage v-if="isCompleted" />
 
-        <div v-if="completedParticipants.length > 0" class="completed-list">
+        <!-- <div v-if="completedParticipants.length > 0" class="completed-list">
           <h3>Déjà passés</h3>
           <ul>
             <li 
@@ -188,7 +188,7 @@ const stopDaily = () => {
               </div>
             </li>
           </ul>
-        </div>
+        </div> -->
 
         <DailySummary 
           v-if="isCompleted"
