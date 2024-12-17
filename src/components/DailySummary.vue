@@ -39,7 +39,16 @@ const getStatusIcon = (status?: 'present' | 'absent') => {
         </thead>
         <tbody>
           <tr v-for="participant in participants" :key="participant.id">
-            <td>{{ participant.name }}</td>
+            <td>
+              {{ participant.name }}
+              <span 
+                v-if="participant.isSpeaker" 
+                class="speaker-icon" 
+                title="A été speaker du daily"
+              >
+                🎤
+              </span>
+            </td>
             <td>{{ participant.isSpeaker ? 'Speaker' : 'Participant' }}</td>
             <td :class="{ 
               'status-present': participant.status === 'present',
@@ -59,7 +68,6 @@ const getStatusIcon = (status?: 'present' | 'absent') => {
 .daily-summary {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #d2d2d7;
 }
 
 .table-container {
@@ -99,5 +107,11 @@ td.status-present {
 td.status-absent {
   color: #ff3b30;
   font-weight: 600;
+}
+
+.speaker-icon {
+  margin-left: 0.5rem;
+  font-size: 0.8em;
+  vertical-align: middle;
 }
 </style>

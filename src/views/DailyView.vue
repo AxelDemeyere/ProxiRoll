@@ -1,61 +1,88 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type { Participant } from '../types/participant';
-import { getRandomIndex, generateId } from '../utils/random';
-import { useParticipantsStore } from '../stores/participants';
-import ParticipantForm from '../components/ParticipantForm.vue';
-import ParticipantList from '../components/ParticipantList.vue';
-import SelectedParticipant from '../components/SelectedParticipant.vue';
-import CompletionMessage from '../components/CompletionMessage.vue';
-import DailySummary from '../components/DailySummary.vue';
+import { computed, onMounted, ref, watch } from "vue";
+import DailySummary from "../components/DailySummary.vue";
+import ParticipantForm from "../components/ParticipantForm.vue";
+import ParticipantList from "../components/ParticipantList.vue";
+import SelectedParticipant from "../components/SelectedParticipant.vue";
+import { useParticipantsStore } from "../stores/participants";
+import type { Participant } from "../types/participant";
+import { generateId } from "../utils/random";
 
 const { participants } = useParticipantsStore();
 const selectedId = ref<string | null>(null);
 const completedParticipants = ref<Participant[]>([]);
 const hasStarted = ref(false);
 const speaker = ref<Participant | null>(null);
+const showSummary = ref(false);
 
-const selectedParticipant = computed(() => 
-  participants.value.find(p => p._id === selectedId.value) || null
+const dailyProgress = computed(() => {
+  const total = participants.value.length + completedParticipants.value.length;
+  const completed = completedParticipants.value.length;
+  return total > 0 ? (completed / total) * 100 : 0;
+});
+
+const selectedParticipant = computed(
+  () => participants.value.find((p) => p._id === selectedId.value) || null
 );
 
 const isCompleted = computed(() => {
-  return hasStarted.value && participants.value.length === 0 && completedParticipants.value.length > 0;
+  return (
+    participants.value.length === 0 && completedParticipants.value.length > 0
+  );
+});
+
+watch(isCompleted, (newValue) => {
+  if (newValue) {
+    showSummary.value = true;
+  }
 });
 
 const addParticipant = (name: string) => {
   participants.value.push({
     _id: generateId(),
-    name
+    name,
   });
 };
 
 const setSpeaker = (participantId: string) => {
+  // Si tous les participants ont été traités, on ne peut plus modifier le speaker
+  if (participants.value.length === 0) {
+    return;
+  }
+
   // Reset previous speaker if exists
-  participants.value.forEach(p => p.isSpeaker = false);
+  participants.value.forEach((p) => (p.isSpeaker = false));
   speaker.value = null;
 
-  const selectedSpeaker = participants.value.find(p => p._id === participantId);
+  const selectedSpeaker = participants.value.find(
+    (p) => p._id === participantId
+  );
   if (selectedSpeaker && !hasStarted.value) {
     selectedSpeaker.isSpeaker = true;
     speaker.value = selectedSpeaker;
-    participants.value = participants.value.filter(p => p._id !== selectedSpeaker._id);
+    participants.value = participants.value.filter(
+      (p) => p._id !== selectedSpeaker._id
+    );
     participants.value.push(selectedSpeaker);
   }
 };
 
-const updateParticipantStatus = (status: 'present' | 'absent') => {
+const updateParticipantStatus = (status: "present" | "absent") => {
   if (selectedId.value) {
-    const participant = participants.value.find(p => p._id === selectedId.value);
+    const participant = participants.value.find(
+      (p) => p._id === selectedId.value
+    );
     if (participant) {
       participant.status = status;
     }
   }
 };
 
-const updateParticipantMood = (mood: 'good' | 'neutral' | 'bad') => {
+const updateParticipantMood = (mood: "good" | "neutral" | "bad") => {
   if (selectedId.value) {
-    const participant = participants.value.find(p => p._id === selectedId.value);
+    const participant = participants.value.find(
+      (p) => p._id === selectedId.value
+    );
     if (participant) {
       participant.mood = mood;
     }
@@ -63,39 +90,41 @@ const updateParticipantMood = (mood: 'good' | 'neutral' | 'bad') => {
 };
 
 const selectRandomParticipant = () => {
-  if (!hasStarted.value) {
-    if (!speaker.value) {
-      return;
+  if (participants.value.length > 0) {
+    const randomIndex = Math.floor(Math.random() * participants.value.length);
+    const randomParticipant = participants.value[randomIndex];
+
+    // Désélectionner le précédent speaker
+    if (speaker.value) {
+      speaker.value.isSpeaker = false;
     }
+
+    // Sélectionner le nouveau participant
+    selectedId.value = randomParticipant._id;
+    speaker.value = randomParticipant;
+    randomParticipant.isSpeaker = true;
+
+    // S'assurer que le daily a commencé
     hasStarted.value = true;
-  }
-
-  if (participants.value.length === 0) {
-    selectedId.value = null;
-    return;
-  }
-
-  if (participants.value.length > 1 && participants.value[participants.value.length - 1].isSpeaker) {
-    const randomIndex = getRandomIndex(participants.value.length - 1);
-    selectedId.value = participants.value[randomIndex]._id;
-  } else {
-    const randomIndex = getRandomIndex(participants.value.length);
-    selectedId.value = participants.value[randomIndex]._id;
   }
 };
 
 const nextParticipant = () => {
   if (selectedId.value) {
-    const selected = participants.value.find(p => p._id === selectedId.value);
+    const selected = participants.value.find((p) => p._id === selectedId.value);
     if (selected) {
       completedParticipants.value.push(selected);
-      participants.value = participants.value.filter(p => p._id !== selected._id);
-      
-      // Sélectionner automatiquement le prochain participant
-      if (participants.value.length > 0) {
-        selectRandomParticipant();
+      participants.value = participants.value.filter(
+        (p) => p._id !== selected._id
+      );
+
+      // Si plus de participants, terminer automatiquement
+      if (participants.value.length === 0) {
+        hasStarted.value = false;
+        speaker.value = null;
       } else {
-        selectedId.value = null;
+        // Sélectionner automatiquement le prochain participant
+        selectRandomParticipant();
       }
     }
   }
@@ -107,91 +136,70 @@ const stopDaily = () => {
   selectedId.value = null;
   hasStarted.value = false;
   speaker.value = null;
-  participants.value.forEach(p => p.isSpeaker = false);
+  participants.value.forEach((p) => (p.isSpeaker = false));
+  showSummary.value = true;
 };
+
+onMounted(() => {
+  // stopTimer(); // Supprimé car il n'y a plus de timer
+});
 </script>
 
 <template>
   <div class="daily-view">
-    <div class="content-wrapper">
-      <div class="header">
-        <ParticipantForm v-if="!isCompleted" @add-participant="addParticipant" />
-        <button 
-          v-if="hasStarted && !isCompleted" 
-          @click="stopDaily" 
-          class="stop-button"
-        >
-          Arrêter le daily
-        </button>
-      </div>
-      
-      <div class="main-content">
-        <div v-if="speaker && !isCompleted" class="speaker-info">
-          <h3>Speaker du daily</h3>
-          <p>{{ speaker.name }}</p>
-        </div>
+    <div v-if="!isCompleted" class="daily-progress-bar">
+      <div class="progress" :style="{ width: `${dailyProgress}%` }"></div>
+    </div>
 
-        <div v-if="participants.length > 0" class="action-content">
-          <button 
+    <div class="dashboard-grid">
+      <div v-if="!isCompleted" class="grid-section participants-section">
+        <div class="section-header">
+          <ParticipantForm
+            v-if="!isCompleted"
+            @add-participant="addParticipant"
+          />
+        </div>
+        <ParticipantList
+          :participants="participants"
+          :selectedId="selectedId"
+          :canSelectSpeaker="!hasStarted"
+          @set-speaker="setSpeaker"
+        />
+      </div>
+
+      <div v-if="!isCompleted" class="grid-section action-section">
+        <div class="action-content">
+          <button
             v-if="!selectedId"
             @click="selectRandomParticipant"
             class="select-button"
             :disabled="!hasStarted && !speaker"
           >
-            {{ !hasStarted ? 'Commencer le daily' : 'Tirer au sort' }}
+            {{ !hasStarted ? "Commencer le daily" : "Tirer au sort" }}
           </button>
 
-          <button
-            v-else
-            @click="nextParticipant"
-            class="next-button"
-          >
+          <button v-else @click="nextParticipant" class="next-button">
             Participant suivant
           </button>
 
-          <SelectedParticipant 
+          <SelectedParticipant
             :participant="selectedParticipant"
             @update-status="updateParticipantStatus"
             @update-mood="updateParticipantMood"
           />
-          
-          <ParticipantList 
-            :participants="participants"
-            :selectedId="selectedId"
-            @set-speaker="setSpeaker"
-          />
+
+          <button
+            v-if="hasStarted && !isCompleted"
+            @click="stopDaily"
+            class="stop-button"
+          >
+            Arrêter le daily
+          </button>
         </div>
+      </div>
 
-        <CompletionMessage v-if="isCompleted" />
-
-        <!-- <div v-if="completedParticipants.length > 0" class="completed-list">
-          <h3>Déjà passés</h3>
-          <ul>
-            <li 
-              v-for="participant in completedParticipants" 
-              :key="participant._id"
-              :class="{
-                'status-present': participant.status === 'present',
-                'status-absent': participant.status === 'absent',
-                'mood-good': participant.mood === 'good',
-                'mood-neutral': participant.mood === 'neutral',
-                'mood-bad': participant.mood === 'bad'
-              }"
-            >
-              <span class="participant-name">{{ participant.name }}</span>
-              <div class="participant-indicators">
-                <span v-if="participant.status === 'present'" class="status-indicator">✓</span>
-                <span v-if="participant.status === 'absent'" class="status-indicator">✗</span>
-                <span v-if="participant.mood === 'good'" class="mood-indicator">😊</span>
-                <span v-if="participant.mood === 'neutral'" class="mood-indicator">😐</span>
-                <span v-if="participant.mood === 'bad'" class="mood-indicator">😟</span>
-              </div>
-            </li>
-          </ul>
-        </div> -->
-
-        <DailySummary 
-          v-if="isCompleted"
+      <div v-if="isCompleted" class="grid-section summary-section full-width">
+        <DailySummary
           :participants="completedParticipants"
           :speaker="speaker"
         />
@@ -201,136 +209,121 @@ const stopDaily = () => {
 </template>
 
 <style scoped>
-.daily-view {
-  padding: 1rem 0;
-}
-
-.content-wrapper {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-radius: 24px;
-  padding: 2rem;
-  background-color: #ffffff;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.speaker-info {
-  background-color: #e8f2ff;
-  border-radius: 16px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.speaker-info h3 {
-  color: #0071e3;
-  margin: 0 0 0.5rem 0;
-}
-
-.speaker-info p {
-  font-size: 1.2em;
-  font-weight: 500;
+* {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
 }
 
-.main-content {
+.daily-view {
+  width: 100%;
+  height: 90vh;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  padding: 1rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.daily-progress-bar {
+  width: 90%;
+  height: 5px;
+  background-color: #e0e0e0;
+  margin-bottom: 0.5rem;
+}
+
+.progress {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.5s ease;
+}
+
+.dashboard-grid {
+  width: 90%;
+  height: 90%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.grid-section {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.participants-section {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-header {
+  flex-shrink: 0;
+  margin-bottom: 0.5rem;
+}
+
+.action-section {
+  grid-column: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .action-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
 }
 
-.select-button, .next-button {
-  font-size: 1.2em;
-  min-width: 200px;
+.select-button,
+.next-button,
+.stop-button {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 1em;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.select-button:disabled {
-  background-color: #d2d2d7;
-  cursor: not-allowed;
+.select-button {
+  background-color: #0071e3;
+  color: white;
 }
 
 .next-button {
   background-color: #34c759;
-}
-
-.next-button:hover {
-  background-color: #32d459;
+  color: white;
 }
 
 .stop-button {
   background-color: #ff3b30;
-  font-size: 0.9em;
-  padding: 8px 16px;
+  color: white;
 }
 
-.stop-button:hover {
-  background-color: #ff453a;
+.select-button:disabled {
+  background-color: #a2d2ff;
+  cursor: not-allowed;
 }
 
-.completed-list {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #d2d2d7;
-}
-
-.completed-list ul {
-  list-style: none;
-  padding: 0;
-}
-
-.completed-list li {
-  padding: 12px 16px;
-  background-color: #f5f5f7;
-  border-radius: 12px;
-  margin: 8px 0;
+.full-width {
+  grid-column: 1 / -1;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-}
-
-.participant-name {
-  color: #1d1d1f;
-}
-
-.participant-indicators {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.status-indicator, .mood-indicator {
-  font-size: 1.2em;
-}
-
-.status-present {
-  border-left: 4px solid #34c759;
-}
-
-.status-absent {
-  border-left: 4px solid #ff3b30;
-}
-
-.mood-good {
-  background-color: rgba(52, 199, 89, 0.1);
-}
-
-.mood-neutral {
-  background-color: rgba(255, 204, 0, 0.1);
-}
-
-.mood-bad {
-  background-color: rgba(255, 59, 48, 0.1);
 }
 </style>

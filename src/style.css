@@ -41,9 +41,10 @@ html, body {
 }
 
 #app {
-  max-width: 980px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 ;
 }
 
 h1 {
@@ -97,4 +98,71 @@ input {
 input:focus {
   outline: none;
   border-color: var(--accent-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  #app {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .grid-section {
+    width: 100%;
+  }
+
+  .action-section .action-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-section button {
+    margin: 0.5rem 0;
+    width: 100%;
+  }
+
+  .daily-summary .table-container {
+    overflow-x: auto;
+  }
+
+  .daily-summary table {
+    min-width: 300px;
+  }
+
+  header nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header nav a {
+    margin: 0;
+  }
+}
+
+/* Ajustements pour les écrans très petits */
+@media (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
+
+  #app {
+    padding: 0 0.25rem;
+  }
+
+  .daily-summary {
+    font-size: 0.9em;
+  }
+
+  .daily-summary th, .daily-summary td {
+    padding: 8px 12px;
+  }
 }

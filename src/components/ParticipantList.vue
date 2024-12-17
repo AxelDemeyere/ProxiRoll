@@ -4,6 +4,7 @@ import type { Participant } from '../types/participant';
 defineProps<{
   participants: Participant[];
   selectedId: string | null;
+  canSelectSpeaker?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -21,7 +22,10 @@ const emit = defineEmits<{
         :class="{ 'selected': participant._id === selectedId }"
       >
         <div class="participant-info">
-          <label class="speaker-checkbox">
+          <label 
+            v-if="canSelectSpeaker" 
+            class="speaker-checkbox"
+          >
             <input
               type="radio"
               name="speaker"
