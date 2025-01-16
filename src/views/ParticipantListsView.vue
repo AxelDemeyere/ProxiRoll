@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import ListEditor from '../components/ListEditor.vue';
 import { useListsStore } from '../stores/lists';
 import { useParticipantsStore } from '../stores/participants';
-import ListEditor from '../components/ListEditor.vue';
 
 const router = useRouter();
 const { 
@@ -56,25 +56,26 @@ const selectList = async (listId: string) => {
 
 <template>
   <div class="lists-view">
-    <div class="content-wrapper">
+    <div class="content-container">
       <div class="header">
-        <h2>Listes de participants</h2>
-        <form @submit.prevent="createList" class="new-list-form">
-          <div class="input-group">
-            <input
-              v-model="newListName"
-              type="text"
-              placeholder="Nom de la nouvelle liste"
-              class="new-list-input"
-              required
-            />
-          </div>
-          <button type="submit" class="create-button">
-            <span class="button-text">Créer une liste</span>
-            <span class="button-icon">+</span>
-          </button>
-        </form>
+        <h1>Listes de participants</h1>
+        <p class="subtitle">Gérez les listes de participants</p>
       </div>
+
+      <form @submit.prevent="createList" class="new-list-form card">
+        <div class="form-group">
+          <input
+            v-model="newListName"
+            type="text"
+            placeholder="Nom de la nouvelle liste"
+            class="input"
+            required
+          />
+        </div>
+        <button type="submit" class="button button-primary">
+          Créer
+        </button>
+      </form>
 
       <div v-if="loading" class="loading">
         <div class="loading-spinner"></div>
@@ -116,9 +117,12 @@ const selectList = async (listId: string) => {
 </template>
 
 <style scoped>
+
 .lists-view {
-  min-height: 100%;
-  padding: 1rem;
+  padding: 2rem 1rem;
+  animation: fadeIn 0.3s ease-out;
+  min-height: 100vh;
+  background-color: var(--background-color);
 }
 
 @media (max-width: 768px) {
@@ -127,27 +131,49 @@ const selectList = async (listId: string) => {
   }
 }
 
-.header {
-  margin-bottom: 2rem;
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.header h2 {
-  margin-bottom: 1rem;
-  color: #2c3e50;
-  font-size: 1.5rem;
+.header {
+  text-align: center;
+  padding: 1rem 0 2rem;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
 }
 
 @media (max-width: 480px) {
-  .header h2 {
+  .header h1 {
     font-size: 1.2rem;
     text-align: center;
   }
 }
 
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
 .new-list-form {
   display: flex;
   gap: 1rem;
-  align-items: center;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
 }
 
 @media (max-width: 768px) {
@@ -156,12 +182,12 @@ const selectList = async (listId: string) => {
     gap: 0.5rem;
   }
 
-  .new-list-form .create-button {
+  .new-list-form{
     width: 100%;
   }
 }
 
-.input-group {
+.form-group {
   flex: 1;
 }
 
@@ -251,7 +277,7 @@ const selectList = async (listId: string) => {
   border-radius: 0 0 16px 16px;
   width: 100%;
   padding: 0.75rem;
-  background-color: #2c3e50;
+  background-color: #007AFF;
   color: white;
   border: none;
   cursor: pointer;
@@ -260,13 +286,37 @@ const selectList = async (listId: string) => {
 }
 
 .use-list-button:hover {
-  background-color: #34495e;
+  background-color: #0066CC;
 }
 
 @media (max-width: 480px) {
   .use-list-button {
     padding: 0.5rem;
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .lists-view {
+    padding: 1rem 0.5rem;
+  }
+
+  .header {
+    padding: 0.5rem 0 1.5rem;
+  }
+
+  .header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .new-list-form {
+    padding: 1rem;
+    margin: 0 0.5rem;
   }
 }
 </style>

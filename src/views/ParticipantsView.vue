@@ -1,3 +1,41 @@
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import { useParticipantsStore } from '../stores/participants';
+
+const { participants, loading, error, fetchParticipants, addParticipant, deleteParticipant } = useParticipantsStore();
+
+const newParticipantName = ref('');
+
+onMounted(async () => {
+  try {
+    await fetchParticipants();
+  } catch (err) {
+    console.error('Failed to fetch participants:', err);
+  }
+});
+
+const createParticipant = async () => {
+  if (newParticipantName.value.trim()) {
+    try {
+      await addParticipant({
+        name: newParticipantName.value.trim()
+      });
+      newParticipantName.value = '';
+    } catch (err) {
+      console.error('Failed to create participant:', err);
+    }
+  }
+};
+
+const removeParticipant = async (participantId: string) => {
+  try {
+    await deleteParticipant(participantId);
+  } catch (err) {
+    console.error('Failed to delete participant:', err);
+  }
+};
+</script>
+
 <template>
   <div class="participants-view">
     <div class="content-container">
@@ -62,45 +100,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useParticipantsStore } from '../stores/participants';
-
-const { participants, loading, error, fetchParticipants, addParticipant, deleteParticipant } = useParticipantsStore();
-
-const newParticipantName = ref('');
-
-onMounted(async () => {
-  try {
-    await fetchParticipants();
-  } catch (err) {
-    console.error('Failed to fetch participants:', err);
-  }
-});
-
-const createParticipant = async () => {
-  if (newParticipantName.value.trim()) {
-    try {
-      await addParticipant({
-        name: newParticipantName.value.trim()
-      });
-      newParticipantName.value = '';
-    } catch (err) {
-      console.error('Failed to create participant:', err);
-    }
-  }
-};
-
-const removeParticipant = async (participantId: string) => {
-  try {
-    await deleteParticipant(participantId);
-  } catch (err) {
-    console.error('Failed to delete participant:', err);
-  }
-};
-</script>
-
 <style scoped>
+
 .participants-view {
   padding: 2rem 1rem;
   animation: fadeIn 0.3s ease-out;
@@ -127,6 +128,13 @@ const removeParticipant = async (participantId: string) => {
   color: var(--text-primary);
   margin-bottom: 0.75rem;
   letter-spacing: -0.02em;
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
 }
 
 .subtitle {
