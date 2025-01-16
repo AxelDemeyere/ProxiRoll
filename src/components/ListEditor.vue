@@ -101,7 +101,8 @@ const handleParticipantSelect = (participantId: string) => {
   border: 1px solid #d2d2d7;
   border-radius: 16px 16px 0 0;
   padding: 1.5rem;
-
+  overflow: hidden; 
+  position: relative; 
 }
 
 .list-header {
@@ -112,6 +113,8 @@ const handleParticipantSelect = (participantId: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem; 
 }
 
 .list-actions {
