@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { participantService } from '../services/participantService';
 import type { Participant } from '../types/participant';
 
@@ -82,6 +82,7 @@ onMounted(loadAvailableParticipants);
 .participant-select {
   flex: 1;
   padding: 12px 16px;
+  width: 20%;
   border-radius: 12px;
   border: 1px solid #d2d2d7;
   background-color: #ffffff;
@@ -123,5 +124,11 @@ onMounted(loadAvailableParticipants);
 
 .error {
   color: #ff3b30;
+}
+
+@media(max-width: 768px) {
+  .selector-container {
+    content: "";
+  }
 }
 </style>
