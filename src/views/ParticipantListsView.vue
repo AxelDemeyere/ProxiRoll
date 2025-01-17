@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import ListEditor from '../components/ListEditor.vue';
 import { useListsStore } from '../stores/lists';
 import { useParticipantsStore } from '../stores/participants';
-import ListEditor from '../components/ListEditor.vue';
 
 const router = useRouter();
 const { lists, addList, updateList, deleteList, addParticipantToList, removeParticipantFromList } = useListsStore();
@@ -69,7 +69,7 @@ const selectList = async (listId: string) => {
 
 <style scoped>
 .lists-view {
-  padding: 1rem 0;
+  padding: 1rem;
 }
 
 .content-wrapper {

@@ -65,7 +65,7 @@ const getStatusIcon = (status?: 'present' | 'absent') => {
 .table-container {
   margin-top: 1rem;
   border-radius: 12px;
-  overflow: hidden;
+
   border: 1px solid #d2d2d7;
 }
 

@@ -17,21 +17,17 @@ import NavBar from './components/NavBar.vue';
 
 <style>
 .app-container {
-  width: 100%;
   height: 100vh;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+
 }
 
 main {
   flex: 1;
-  max-width: 800px;
   margin: 0 auto;
-  padding: 1rem;
   width: 100%;
-  overflow: hidden;
 }
 
 .fade-enter-active,

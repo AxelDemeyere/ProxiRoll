@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import type { ParticipantList } from '../types/participantList';
 
 const props = defineProps<{
@@ -34,6 +34,20 @@ const addParticipant = () => {
     emit('addParticipant', newParticipantName.value.trim());
     newParticipantName.value = '';
   }
+};
+
+const showAllParticipants = ref(false);
+const PARTICIPANTS_LIMIT = 3;
+
+const displayedParticipants = computed(() => {
+  if (showAllParticipants.value || props.list.participants.length <= PARTICIPANTS_LIMIT) {
+    return props.list.participants;
+  }
+  return props.list.participants.slice(0, PARTICIPANTS_LIMIT);
+});
+
+const toggleParticipantsDisplay = () => {
+  showAllParticipants.value = !showAllParticipants.value;
 };
 </script>
 
@@ -77,17 +91,27 @@ const addParticipant = () => {
       </button>
     </div>
 
-    <ul class="participants-list">
-      <li v-for="participant in list.participants" :key="participant.id">
-        <span>{{ participant.name }}</span>
-        <button
-          class="icon-button small"
-          @click="$emit('removeParticipant', participant.id)"
-        >
-          ❌
-        </button>
-      </li>
-    </ul>
+    <div class="participants-section">
+      <ul class="participants-list">
+        <li v-for="participant in displayedParticipants" :key="participant.id">
+          <span>{{ participant.name }}</span>
+          <button
+            class="icon-button small"
+            @click="$emit('removeParticipant', participant.id)"
+          >
+            ❌
+          </button>
+        </li>
+      </ul>
+      
+      <button 
+        v-if="props.list.participants.length > PARTICIPANTS_LIMIT"
+        @click="toggleParticipantsDisplay"
+        class="toggle-button"
+      >
+        {{ showAllParticipants ? 'Voir moins' : `Voir plus (${props.list.participants.length - PARTICIPANTS_LIMIT})` }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -175,4 +199,24 @@ const addParticipant = () => {
   padding: 8px 16px;
   font-size: 0.9em;
 }
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: #0071e3;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 0.9em;
+  margin-top: 8px;
+}
+
+.toggle-button:hover {
+  text-decoration: underline;
+}
+
+.participants-section {
+  display: flex;
+  flex-direction: column;
+}
+
 </style>

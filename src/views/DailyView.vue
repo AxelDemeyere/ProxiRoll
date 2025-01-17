@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type { Participant } from '../types/participant';
-import { getRandomIndex, generateId } from '../utils/random';
-import { useParticipantsStore } from '../stores/participants';
+import { computed, ref } from 'vue';
+import CompletionMessage from '../components/CompletionMessage.vue';
+import DailySummary from '../components/DailySummary.vue';
 import ParticipantForm from '../components/ParticipantForm.vue';
 import ParticipantList from '../components/ParticipantList.vue';
 import SelectedParticipant from '../components/SelectedParticipant.vue';
-import CompletionMessage from '../components/CompletionMessage.vue';
-import DailySummary from '../components/DailySummary.vue';
+import { useParticipantsStore } from '../stores/participants';
+import type { Participant } from '../types/participant';
+import { generateId, getRandomIndex } from '../utils/random';
 
 const { participants } = useParticipantsStore();
 const selectedId = ref<string | null>(null);
@@ -197,6 +197,8 @@ const stopDaily = () => {
 <style scoped>
 .daily-view {
   padding: 1rem 0;
+  width: 90%;
+  margin: 0 auto;
 }
 
 .content-wrapper {
@@ -204,6 +206,7 @@ const stopDaily = () => {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border-radius: 24px;
   padding: 2rem;
+  margin: 0 auto;
   background-color: #ffffff;
 }
 
