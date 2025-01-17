@@ -108,8 +108,13 @@ const stopDaily = () => {
 <template>
   <div class="daily-view">
     <div class="content-wrapper">
+      <div v-if="speaker && !isCompleted" class="speaker-info">
+        <h3>Le parleur est</h3>
+        <p>{{ speaker.name }}</p>
+      </div>
       <div class="header">
         <ParticipantForm v-if="!isCompleted" @add-participant="addParticipant" />
+
         <button 
           v-if="hasStarted && !isCompleted" 
           @click="stopDaily" 
@@ -118,12 +123,10 @@ const stopDaily = () => {
           Arrêter le daily
         </button>
       </div>
+
       
       <div class="main-content">
-        <div v-if="speaker && !isCompleted" class="speaker-info">
-          <h3>Speaker du daily</h3>
-          <p>{{ speaker.name }}</p>
-        </div>
+
 
         <div v-if="participants.length > 0" class="action-content">
           <button 
@@ -158,7 +161,7 @@ const stopDaily = () => {
 
         <CompletionMessage v-if="isCompleted" />
 
-        <div v-if="completedParticipants.length > 0" class="completed-list">
+<!--        <div v-if="completedParticipants.length > 0" class="completed-list">
           <h3>Déjà passés</h3>
           <ul>
             <li 
@@ -182,7 +185,7 @@ const stopDaily = () => {
               </div>
             </li>
           </ul>
-        </div>
+        </div>-->
 
         <DailySummary 
           v-if="isCompleted"
@@ -245,6 +248,7 @@ const stopDaily = () => {
 .action-content {
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1.5rem;
 }

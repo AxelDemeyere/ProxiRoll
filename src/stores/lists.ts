@@ -5,11 +5,24 @@ import { generateId } from '../utils/random';
 const lists = ref<ParticipantList[]>([
   {
     id: generateId(),
-    name: 'Équipe Frontend',
+    name: 'CDS',
     participants: [
-      { id: generateId(), name: 'Alice' },
-      { id: generateId(), name: 'Bob' },
-      { id: generateId(), name: 'Charlie' }
+      { id: generateId(), name: 'Audrey' },
+      { id: generateId(), name: 'Saïd' },
+      { id: generateId(), name: 'Axel' },
+      { id: generateId(), name: 'Ferhat' },
+      { id: generateId(), name: 'Victoire' },
+      { id: generateId(), name: 'Laurent' },
+      { id: generateId(), name: 'Eliott' },
+      { id: generateId(), name: 'Yann' },
+      { id: generateId(), name: 'Jorix' },
+      { id: generateId(), name: 'Ludovic' },
+      { id: generateId(), name: 'Alexandre' },
+      { id: generateId(), name: 'Noémie' },
+      { id: generateId(), name: 'Martin' },
+      { id: generateId(), name: 'Ophélie' }
+
+
     ]
   },
   {
@@ -32,7 +45,7 @@ export const useListsStore = () => {
     });
   };
 
-  const updateList = (listId: string, updates: Partial<ParticipantList>) => {
+  const updateList = (listId:string , updates: Partial<ParticipantList>) => {
     const index = lists.value.findIndex(list => list.id === listId);
     if (index !== -1) {
       lists.value[index] = { ...lists.value[index], ...updates };

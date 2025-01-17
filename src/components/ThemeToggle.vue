@@ -5,7 +5,7 @@ const { isDark, toggleTheme } = useThemeStore();
 </script>
 
 <template>
-  <button class="theme-toggle" @click="toggleTheme">
+  <button class="theme-toggle" @click="toggleTheme" disabled>
     <span v-if="isDark">☀️</span>
     <span v-else>🌙</span>
   </button>
@@ -13,6 +13,7 @@ const { isDark, toggleTheme } = useThemeStore();
 
 <style scoped>
 .theme-toggle {
+
   background: none;
   border: none;
   padding: 8px;
@@ -24,5 +25,6 @@ const { isDark, toggleTheme } = useThemeStore();
 
 .theme-toggle:hover {
   background: var(--hover-color);
+  cursor: not-allowed;
 }
 </style>

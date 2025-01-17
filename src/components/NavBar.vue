@@ -10,7 +10,6 @@ const currentRoute = computed(() => route.name);
 <template>
   <nav class="navbar">
     <div class="nav-content">
-      <h1 class="nav-title">Daily Roll</h1>
       <div class="nav-actions">
         <div class="nav-links">
           <router-link
@@ -28,7 +27,6 @@ const currentRoute = computed(() => route.name);
             Listes
           </router-link>
         </div>
-        <ThemeToggle />
       </div>
     </div>
   </nav>
@@ -36,7 +34,7 @@ const currentRoute = computed(() => route.name);
 
 <style scoped>
 .navbar {
-  background-color: var(--bg-color);
+  background-color: #F2F2F7;
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
@@ -45,12 +43,10 @@ const currentRoute = computed(() => route.name);
 }
 
 .nav-content {
+  width: fit-content;
   max-width: 800px;
   margin: 0 auto;
   padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .nav-title {
@@ -61,12 +57,15 @@ const currentRoute = computed(() => route.name);
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  padding: 0.2rem;
+  border-radius: 30px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  background-color: white;
 }
 
 .nav-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 
 .nav-link {
