@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import ThemeToggle from "./ThemeToggle.vue";
+
 
 const route = useRoute();
 const currentRoute = computed(() => route.name);
@@ -34,7 +34,7 @@ const currentRoute = computed(() => route.name);
 
 <style scoped>
 .navbar {
-  background-color: #F2F2F7;
+  background-color: var(--bg-color);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
@@ -60,7 +60,6 @@ const currentRoute = computed(() => route.name);
   padding: 0.2rem;
   border-radius: 30px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-  background-color: white;
 }
 
 .nav-links {

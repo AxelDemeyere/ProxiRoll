@@ -90,7 +90,9 @@ const nextParticipant = () => {
     if (selected) {
       completedParticipants.value.push(selected);
       participants.value = participants.value.filter(p => p.id !== selected.id);
-      selectedId.value = null;
+
+      // Sélectionner automatiquement le prochain participant
+      selectRandomParticipant();
     }
   }
 };
@@ -124,12 +126,9 @@ const stopDaily = () => {
         </button>
       </div>
 
-      
       <div class="main-content">
-
-
         <div v-if="participants.length > 0" class="action-content">
-          <button 
+          <button
             v-if="!selectedId"
             @click="selectRandomParticipant"
             class="select-button"
@@ -146,13 +145,13 @@ const stopDaily = () => {
             Participant suivant
           </button>
 
-          <SelectedParticipant 
+          <SelectedParticipant
             :participant="selectedParticipant"
             @update-status="updateParticipantStatus"
             @update-mood="updateParticipantMood"
           />
-          
-          <ParticipantList 
+
+          <ParticipantList
             :participants="participants"
             :selectedId="selectedId"
             @set-speaker="setSpeaker"
@@ -160,32 +159,6 @@ const stopDaily = () => {
         </div>
 
         <CompletionMessage v-if="isCompleted" />
-
-<!--        <div v-if="completedParticipants.length > 0" class="completed-list">
-          <h3>Déjà passés</h3>
-          <ul>
-            <li 
-              v-for="participant in completedParticipants" 
-              :key="participant.id"
-              :class="{
-                'status-present': participant.status === 'present',
-                'status-absent': participant.status === 'absent',
-                'mood-good': participant.mood === 'good',
-                'mood-neutral': participant.mood === 'neutral',
-                'mood-bad': participant.mood === 'bad'
-              }"
-            >
-              <span class="participant-name">{{ participant.name }}</span>
-              <div class="participant-indicators">
-                <span v-if="participant.status === 'present'" class="status-indicator">✓</span>
-                <span v-if="participant.status === 'absent'" class="status-indicator">✗</span>
-                <span v-if="participant.mood === 'good'" class="mood-indicator">😊</span>
-                <span v-if="participant.mood === 'neutral'" class="mood-indicator">😐</span>
-                <span v-if="participant.mood === 'bad'" class="mood-indicator">😟</span>
-              </div>
-            </li>
-          </ul>
-        </div>-->
 
         <DailySummary 
           v-if="isCompleted"

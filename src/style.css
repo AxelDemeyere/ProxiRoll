@@ -3,12 +3,12 @@
   line-height: 1.5;
   font-weight: 400;
   
-  --bg-color: #F2F2F7;
+  --bg-color: #ffffff;
   --text-color: #1d1d1f;
   --border-color: rgba(0, 0, 0, 0.1);
   --card-bg: #ffffff;
   --hover-color: #f5f5f7;
-  --secondary-bg: #f5f5f7;
+  --secondary-bg: #F2F2F7;
   --accent-color: #0071e3;
   --accent-hover: #0077ED;
   --success-color: #34c759;
@@ -38,7 +38,8 @@
 html, body {
   margin: 0;
   padding: 0;
-
+  height: 100%;
+  background-color: var(  --secondary-bg);
 }
 
 
