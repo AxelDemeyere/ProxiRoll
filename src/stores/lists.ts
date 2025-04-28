@@ -11,27 +11,12 @@ const lists = ref<ParticipantList[]>([
       { id: generateId(), name: 'Saïd' },
       { id: generateId(), name: 'Axel' },
       { id: generateId(), name: 'Ferhat' },
-      { id: generateId(), name: 'Victoire' },
-      { id: generateId(), name: 'Laurent' },
       { id: generateId(), name: 'Eliott' },
       { id: generateId(), name: 'Yann' },
       { id: generateId(), name: 'Jorix' },
-      { id: generateId(), name: 'Ludovic' },
       { id: generateId(), name: 'Alexandre' },
       { id: generateId(), name: 'Noémie' },
-      { id: generateId(), name: 'Martin' },
       { id: generateId(), name: 'Ophélie' }
-
-
-    ]
-  },
-  {
-    id: generateId(),
-    name: 'Équipe Backend',
-    participants: [
-      { id: generateId(), name: 'David' },
-      { id: generateId(), name: 'Eve' },
-      { id: generateId(), name: 'Frank' }
     ]
   }
 ]);

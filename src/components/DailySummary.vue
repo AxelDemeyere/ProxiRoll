@@ -15,10 +15,13 @@ const getMoodEmoji = (mood?: 'good' | 'neutral' | 'bad') => {
   }
 };
 
-const getStatusIcon = (status?: 'present' | 'absent') => {
+const getStatusIcon = (status?: 'present' | 'absent' | 'réunion' | 'école') => {
   switch (status) {
     case 'present': return '✓';
     case 'absent': return '✗';
+    case 'réunion': return '🗓️';
+    case 'école': return '🏫';
+
     default: return '–';
   }
 };
@@ -43,7 +46,9 @@ const getStatusIcon = (status?: 'present' | 'absent') => {
             <td>{{ participant.isSpeaker ? 'Speaker' : 'Participant' }}</td>
             <td :class="{ 
               'status-present': participant.status === 'present',
-              'status-absent': participant.status === 'absent'
+              'status-absent': participant.status === 'absent',
+              'status-reunion': participant.status === 'réunion',
+              'status-ecole': participant.status === 'école'
             }">
               {{ getStatusIcon(participant.status) }}
             </td>

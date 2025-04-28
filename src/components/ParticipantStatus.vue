@@ -6,7 +6,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'updateStatus', status: 'present' | 'absent'): void;
+  (e: 'updateStatus', status: 'present' | 'absent' | 'réunion' | 'école'): void;
   (e: 'updateMood', mood: 'good' | 'neutral' | 'bad'): void;
 }>();
 </script>
@@ -28,6 +28,22 @@ const emit = defineEmits<{
       >
         ✗ Absent
       </button>
+      <button
+          class="status-btn"
+          :class="{ active: participant.status === 'réunion' }"
+          @click="emit('updateStatus', 'réunion')"
+      >
+        🗓️ Réunion
+      </button>
+      <button
+          class="status-btn"
+          :class="{ active: participant.status === 'école' }"
+          @click="emit('updateStatus', 'école')"
+      >
+        🏫 École
+      </button>
+
+
     </div>
     <div class="mood-buttons">
       <button
@@ -67,6 +83,8 @@ const emit = defineEmits<{
   display: flex;
   gap: 0.5rem;
   justify-content: center;
+  flex-wrap: wrap;
+  max-width: 250px;
 }
 
 .status-btn, .mood-btn {
